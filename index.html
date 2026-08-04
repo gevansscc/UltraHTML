@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blackboard Ultra Block Builder</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+  <div class="topbar">
+    <h1>Ultra Block Builder <span>· write markdown, paste HTML into Blackboard Ultra sections</span></h1>
+    <div class="spacer"></div>
+    <div class="insert-wrap">
+      <button class="btn btn-primary" id="insertBtn" type="button">+ Insert block</button>
+      <div class="menu" id="insertMenu"></div>
+    </div>
+    <button class="btn" id="loadExampleBtn" type="button">Load example</button>
+    <button class="btn" id="newDocBtn" type="button">New</button>
+    <button class="btn" id="downloadMdBtn" type="button">Download .md</button>
+  </div>
+
+  <div class="main">
+    <div class="pane">
+      <div class="pane-head">Markdown</div>
+      <textarea id="editor" spellcheck="false" placeholder="Click + Insert block to get started, or Load example."></textarea>
+    </div>
+
+    <div class="pane right-pane">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="preview" type="button">Preview</button>
+        <button class="tab-btn" data-tab="export" type="button">HTML for Ultra</button>
+      </div>
+
+      <div class="panel active" id="previewPanel">
+        <iframe id="previewFrame" title="Preview"></iframe>
+      </div>
+
+      <div class="panel" id="exportPanel">
+        <div class="export-toolbar">
+          <button class="btn" id="copyAllBtn" type="button">Copy all HTML (one section)</button>
+          <button class="btn" id="downloadHtmlBtn" type="button">Download .html</button>
+        </div>
+        <div id="exportList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-bar" id="errorBar"></div>
+
+  <!-- js-yaml parses the content inside each ::: block -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+  <script src="js/md-helpers.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/parser.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
