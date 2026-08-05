@@ -43,6 +43,22 @@ columns:
     text: Handy for a section that should visually stand apart from the rest of the sheet.
 :::
 
+:::section
+label: Weekly readings
+body: |
+  Please complete the following before class:
+
+  - Read Chapter 3
+  - Watch the intro video
+  - Post one discussion question
+
+  Then follow these setup steps in order:
+
+  1. Open Figma
+  2. Duplicate the starter file
+  3. Rename it with your last name
+:::
+
 :::cards
 label: Projects
 items:

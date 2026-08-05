@@ -3,6 +3,8 @@
  * On purpose this does NOT try to be full markdown — it only understands
  * the handful of things a course-sheet author actually needs:
  *   **bold**   *italic*   `code`   [link text](https://example.com)
+ * plus, in multi-line fields via MD.paragraphs(): "- " bullet lists and
+ * "1. " numbered lists.
  * Anything else is left as plain text and HTML-escaped so authors can't
  * accidentally (or intentionally) break the page.
  *
@@ -42,15 +44,35 @@
     return s;
   }
 
-  // Formats a multi-line block of text into one or more <p> tags.
-  // Blank line = new paragraph. Single newline = <br>.
+  // Formats a multi-line block of text into <p> / <ul> / <ol> as needed.
+  // Blank line = new block. Single newline inside a paragraph = <br>.
+  // A run of consecutive lines that all start with "- " / "* " becomes a
+  // bullet list; a run that all start with "1. " (any digits) becomes a
+  // numbered list. Mixed content works — paragraphs and lists can appear
+  // one after another, separated by blank lines, in the same field.
   function paragraphs(str, pStyle) {
     if (!str) return '';
     const style = pStyle || 'margin:0 0 12px 0;';
+    // reuse the paragraph's own color/size/spacing for lists, just add indent
+    const listStyle = style + 'padding-left:20px;';
     return String(str)
       .trim()
       .split(/\n\s*\n/)
       .map(function (block) {
+        const lines = block.split('\n').map(function (l) { return l.trim(); }).filter(function (l) { return l.length > 0; });
+
+        const isBulleted = lines.length > 0 && lines.every(function (l) { return /^[-*]\s+/.test(l); });
+        if (isBulleted) {
+          const items = lines.map(function (l) { return '<li>' + inline(l.replace(/^[-*]\s+/, '')) + '</li>'; }).join('');
+          return '<ul style="' + listStyle + '">' + items + '</ul>';
+        }
+
+        const isNumbered = lines.length > 0 && lines.every(function (l) { return /^\d+[.)]\s+/.test(l); });
+        if (isNumbered) {
+          const items = lines.map(function (l) { return '<li>' + inline(l.replace(/^\d+[.)]\s+/, '')) + '</li>'; }).join('');
+          return '<ol style="' + listStyle + '">' + items + '</ol>';
+        }
+
         const withBreaks = inline(block.trim()).replace(/\n/g, '<br>');
         return '<p style="' + style + '">' + withBreaks + '</p>';
       })

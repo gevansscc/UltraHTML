@@ -160,6 +160,6 @@ that's already defined at the top of `templates.js`.
 |---|---|---|
 | `js/templates.js` | Defines every block: label, hint, default snippet, render() | **Yes — this is the file** |
 | `js/parser.js` | Splits editor text into blocks, hands each to templates.js | No |
-| `js/md-helpers.js` | Safe inline text formatting (bold/italic/links) used by templates | Only if you want a new inline formatting rule (e.g. `~~strikethrough~~`) |
+| `js/md-helpers.js` | Safe inline text formatting (bold/italic/links) plus paragraph/list formatting (`MD.paragraphs()` turns `- `/`1. ` runs into `<ul>`/`<ol>`) used by templates | Only if you want a new inline formatting rule (e.g. `~~strikethrough~~`) |
 | `js/app.js` | Wires up buttons, tabs, preview iframe, clipboard copy, autosave | No |
 | `index.html` / `css/app.css` | The builder's own interface chrome | No, unless changing the tool's own look |

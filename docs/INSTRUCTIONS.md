@@ -137,6 +137,34 @@ Each block type accepts a slightly different set of color fields since
 they have different parts to color; the **+ Insert block** menu's
 description line for each block lists exactly which ones it supports.
 
+## Bullet and numbered lists
+
+Inside any multi-line `body:` field (Text section, Callout box), you can
+write a bullet or numbered list right alongside your paragraphs — no
+separate block needed. A run of lines all starting with `- ` becomes a
+bullet list; a run all starting with `1. ` becomes a numbered list. Leave
+a blank line before and after the list, same as a paragraph break:
+
+```
+body: |
+  Please complete the following before class:
+
+  - Read Chapter 3
+  - Watch the intro video
+  - Post one discussion question
+
+  Then follow these steps in order:
+
+  1. Open Figma
+  2. Duplicate the starter file
+  3. Rename it with your last name
+```
+
+This is separate from the dedicated **List card** block (which is its
+own white card with just a heading and a list) — use that one when the
+list *is* the whole block, and inline `- `/`1. ` lists when a list needs
+to sit inside a paragraph of other content.
+
 ## If something looks broken
 
 A pink/orange warning box will appear in the preview instead of your
