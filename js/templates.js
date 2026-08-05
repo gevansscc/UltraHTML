@@ -25,6 +25,7 @@
   // Themes used by the "hero" block. Add new ones here and they instantly
   // show up as valid `theme:` values — no other code to touch.
   const THEMES = {
+      dcc:      {bg: '#000000', text: '#e2b222', eyebrow: '#df005f', meta: '#df005f'},
     navy:     { bg: '#1a2a4a', text: '#e8eef7', eyebrow: '#7a9fd4', meta: '#a8c4e0' },
     maroon:   { bg: '#3a1420', text: '#f7e9ec', eyebrow: '#d98ba0', meta: '#e0b3bf' },
     forest:   { bg: '#123326', text: '#e7f3ec', eyebrow: '#7fc9a3', meta: '#a9d9c1' },
