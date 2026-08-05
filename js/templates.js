@@ -25,7 +25,6 @@
   // Themes used by the "hero" block. Add new ones here and they instantly
   // show up as valid `theme:` values — no other code to touch.
   const THEMES = {
-    dcc:      {bg: '#000000', text: '#e2b222', eyebrow: '#df005f', meta: '#df005f'},
     navy:     { bg: '#1a2a4a', text: '#e8eef7', eyebrow: '#7a9fd4', meta: '#a8c4e0' },
     maroon:   { bg: '#3a1420', text: '#f7e9ec', eyebrow: '#d98ba0', meta: '#e0b3bf' },
     forest:   { bg: '#123326', text: '#e7f3ec', eyebrow: '#7fc9a3', meta: '#a9d9c1' },
@@ -93,7 +92,7 @@ badges:
 
     section: {
       label: 'Text section (1–4 columns)',
-      hint: 'A white card with a label, an intro paragraph, and optional side-by-side columns. Optional colors: background, borderColor, labelColor, textColor, boxColor, headingColor.',
+      hint: 'A white card with a label, an intro paragraph, and optional side-by-side columns. Column text supports paragraphs and lists too. Optional colors: background, borderColor, labelColor, textColor, boxColor, headingColor.',
       snippet:
 `:::section
 label: About this course
@@ -119,7 +118,7 @@ columns:
           return (
             '<div style="background-color:' + boxColor + ';border-radius:8px;padding:14px 16px;">' +
               (c.heading ? '<p style="margin:0 0 6px 0;font-size:12px;font-weight:600;color:' + headingColor + ';">' + MD.inline(c.heading) + '</p>' : '') +
-              '<p style="margin:0;font-size:13px;color:' + textColor + ';line-height:1.6;">' + MD.inline(c.text || '') + '</p>' +
+              MD.paragraphs(c.text || '', 'margin:0 0 8px 0;font-size:13px;color:' + textColor + ';line-height:1.6;') +
             '</div>'
           );
         }).join('');
@@ -135,7 +134,7 @@ columns:
 
     cards: {
       label: 'Card grid',
-      hint: 'Row of small equal-width cards — good for project summaries or deliverables. Optional colors: background, borderColor, labelColor, boxColor, titleColor, textColor.',
+      hint: 'Row of small equal-width cards — good for project summaries or deliverables. Item text supports paragraphs and lists too. Optional colors: background, borderColor, labelColor, boxColor, titleColor, textColor.',
       snippet:
 `:::cards
 label: Projects
@@ -157,7 +156,7 @@ items:
           return (
             '<div style="background-color:' + boxColor + ';border-radius:8px;padding:16px 18px;">' +
               (it.title ? '<p style="margin:0 0 6px 0;font-size:13px;font-weight:600;color:' + titleColor + ';">' + MD.inline(it.title) + '</p>' : '') +
-              '<p style="margin:0;font-size:13px;color:' + textColor + ';line-height:1.6;">' + MD.inline(it.text || '') + '</p>' +
+              MD.paragraphs(it.text || '', 'margin:0 0 8px 0;font-size:13px;color:' + textColor + ';line-height:1.6;') +
             '</div>'
           );
         }).join('');

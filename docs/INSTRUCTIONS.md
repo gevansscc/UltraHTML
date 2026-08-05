@@ -165,6 +165,21 @@ own white card with just a heading and a list) — use that one when the
 list *is* the whole block, and inline `- `/`1. ` lists when a list needs
 to sit inside a paragraph of other content.
 
+Column text (in a Text section) and item text (in a Card grid) support
+the same paragraphs-and-lists formatting — just switch that field from a
+single line to a `text: |` block the same way you would for `body:`:
+
+```
+columns:
+  - heading: First half of class
+    text: |
+      Core technical topics:
+
+      - HTML & CSS
+      - Responsive layout
+      - Accessibility basics
+```
+
 ## If something looks broken
 
 A pink/orange warning box will appear in the preview instead of your

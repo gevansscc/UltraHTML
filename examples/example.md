@@ -59,6 +59,25 @@ body: |
   3. Rename it with your last name
 :::
 
+:::section
+label: Two columns with lists
+columns:
+  - heading: First half
+    text: |
+      Core technical topics:
+
+      - HTML & CSS
+      - Responsive layout
+      - Accessibility basics
+  - heading: Second half
+    text: |
+      Design process steps:
+
+      1. Research
+      2. Wireframe
+      3. Prototype
+:::
+
 :::cards
 label: Projects
 items:
