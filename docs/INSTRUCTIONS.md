@@ -1,0 +1,162 @@
+# Using the Ultra Block Builder
+
+This tool lets you build a course/project sheet using simple text, see a live
+preview, and copy out the HTML to paste into Blackboard Ultra — no HTML
+knowledge required.
+
+## The basic idea
+
+Your document is made of **blocks**. Each block starts with `:::` and a
+block name, and ends with `:::`. Inside, you fill in plain `label: value`
+lines. For example:
+
+```
+:::hero
+title: GRD311 — Web & Multimedia 1
+subtitle: User experience, interface design, and front-end development
+theme: navy
+:::
+```
+
+That's it — no tags, no closing brackets to match.
+
+## Getting started
+
+1. Open the builder (your GitHub Pages link).
+2. Click **+ Insert block**, pick a block type, and it drops a starter
+   snippet into the editor with sample text already filled in.
+3. Edit the sample text to your own content.
+4. Watch the **Preview** tab update as you type.
+5. When it looks right, switch to the **HTML for Ultra** tab.
+
+## Getting it into Blackboard Ultra
+
+In Ultra, each block you build corresponds to one "section" of HTML content.
+
+1. In the **HTML for Ultra** tab, find the block you want.
+2. Click **Copy HTML** on that block.
+3. In Ultra, create a new content section and switch its editor to HTML
+   source mode (the `</>` icon), then paste.
+4. Repeat for each block, in order.
+
+If you'd rather keep everything as a single Ultra section instead of one
+per block, use **Copy all HTML (one section)** at the top of that tab.
+
+You can also **Download .html** (a file you can keep for reference or hand
+to someone else) or **Download .md** (your editable source, so you can pick
+up editing later or share the raw text with a colleague).
+
+## Formatting text inside a block
+
+Inside any text field you can use:
+
+- `**bold**` → **bold**
+- `*italic*` → *italic*
+- `` `code` `` → `code`
+- `[link text](https://example.com)` → a clickable link
+
+## Writing lists
+
+Some fields (like `badges` or `items`) hold a list instead of one line.
+Each item goes on its own line starting with a dash and two spaces of
+indent underneath the label:
+
+```
+badges:
+  - 📅 15 weeks
+  - 📋 3 projects
+```
+
+Some lists hold small groups of fields instead of plain text (for example,
+the columns in a Text Section block, or the cards in a Card Grid block).
+Keep the indentation exactly as shown in the inserted snippet — that's
+what tells the tool where one item ends and the next begins:
+
+```
+columns:
+  - heading: First half of class
+    text: Core technical competencies — HTML, CSS, responsive layout.
+  - heading: Second half of class
+    text: UX research, wireframing, prototyping, and visual design.
+```
+
+A few pointers on indentation for lists and columns (body paragraphs are
+now forgiving about this, but lists/columns still need it):
+
+- Use spaces, not tabs.
+- Everything at the same "level" needs the same amount of indent.
+- If something looks wrong in the preview, it's almost always a missing
+  or uneven space — compare against the original snippet from the
+  **+ Insert block** menu.
+
+## Multi-line paragraphs
+
+For a longer paragraph (like a course description), use `body: |` and
+then indent the paragraph underneath it:
+
+```
+body: |
+  This course introduces the foundational principles and practices of
+  UX and UI design as they apply to multimedia and interactive
+  environments.
+```
+
+To start a new paragraph, just leave a blank line:
+
+```
+body: |
+  First paragraph.
+
+  Second paragraph — this can even include a colon: like this, or
+  uneven spacing, and it will still work fine.
+```
+
+## Customizing colors
+
+The white-card blocks (Text section, Card grid, Stat grid, List card,
+Weekly schedule) all accept optional color fields. Leave them out and you
+get the normal look; add any of them to override just that piece. For
+example, on a Text section:
+
+```
+:::section
+label: Custom colors example
+background: #10182b
+borderColor: #10182b
+labelColor: #7a9fd4
+textColor: #e8eef7
+boxColor: #1f2c4d
+headingColor: #a8c4e0
+body: |
+  This section now has a dark background instead of white.
+:::
+```
+
+You can write hex colors the normal way (`#10182b`) — no quotes needed.
+Each block type accepts a slightly different set of color fields since
+they have different parts to color; the **+ Insert block** menu's
+description line for each block lists exactly which ones it supports.
+
+## If something looks broken
+
+A pink/orange warning box will appear in the preview instead of your
+content, and a message bar appears at the bottom of the screen explaining
+what's wrong (an unknown block name, a typo in a keyword, or an
+indentation problem). Fix the block named in the message and the warning
+will disappear — nothing else on the page is affected, and no HTML gets
+exported for a broken block until it's fixed.
+
+## Available block types
+
+Click **+ Insert block** to see the current list with a description of
+each — the list is always up to date with what's actually available,
+including any new block types someone has added since these instructions
+were written.
+
+## Your work is saved automatically
+
+The editor autosaves to your browser as you type, so closing the tab and
+coming back later will restore where you left off — on that same browser,
+on that same computer. It is **not** saved anywhere else, so for anything
+you want to keep long-term, use **Download .md** and save the file
+somewhere safe (e.g. your course folder, OneDrive, etc.).
