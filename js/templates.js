@@ -90,6 +90,36 @@ badges:
       }
     },
 
+    image: {
+      label: 'Image',
+      hint: 'A single image with an optional caption. Use the "Insert image" button in the toolbar to embed a file directly (no hosting needed), or type a URL into src yourself. Optional: caption, width (px), align (left/center/right), radius.',
+      snippet:
+`:::image
+src: https://example.com/your-image.jpg
+alt: Describe the image for screen readers
+caption: Optional caption goes here
+width: 500
+align: center
+:::`,
+      render: function (d) {
+        if (!d.src) {
+          return '<div style="border:1px dashed #c7ccd6;border-radius:8px;padding:24px;text-align:center;color:#8a93a3;' + FONT + 'font-size:13px;">🖼️ No image yet — click "Insert image" in the toolbar, or set a src: URL here.</div>';
+        }
+        const align = ['left', 'center', 'right'].indexOf(d.align) !== -1 ? d.align : 'center';
+        const justify = align === 'left' ? 'flex-start' : (align === 'right' ? 'flex-end' : 'center');
+        const width = parseInt(d.width, 10);
+        const radius = d.radius !== undefined ? parseInt(d.radius, 10) : 8;
+        const src = MD.escapeHtml(d.src);
+        const alt = MD.escapeHtml(d.alt || '');
+        return (
+          '<div style="display:flex;flex-direction:column;align-items:' + justify + ';' + FONT + '">' +
+            '<img src="' + src + '" alt="' + alt + '" style="max-width:100%;' + (width ? 'width:' + width + 'px;' : '') + 'border-radius:' + radius + 'px;display:block;" />' +
+            (d.caption ? '<p style="margin:8px 0 0 0;font-size:12.5px;color:#888;text-align:' + align + ';max-width:' + (width || 600) + 'px;">' + MD.inline(d.caption) + '</p>' : '') +
+          '</div>'
+        );
+      }
+    },
+
     section: {
       label: 'Text section (1–4 columns)',
       hint: 'A white card with a label, an intro paragraph, and optional side-by-side columns. Column text supports paragraphs and lists too. Optional colors: background, borderColor, labelColor, textColor, boxColor, headingColor.',

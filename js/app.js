@@ -33,6 +33,71 @@
     }
   });
 
+  // ---------- insert image (reads a file, shrinks it, embeds it as base64 — no hosting needed) ----------
+  const imageBtn = document.getElementById('insertImageBtn');
+  const imageInput = document.getElementById('imageFileInput');
+  const MAX_IMAGE_WIDTH = 1400; // px — larger photos get downscaled before embedding
+
+  imageBtn.addEventListener('click', function () { imageInput.click(); });
+
+  imageInput.addEventListener('change', function (e) {
+    const file = e.target.files && e.target.files[0];
+    imageInput.value = ''; // allow selecting the same file again later
+    if (!file) return;
+    imageBtn.textContent = 'Processing…';
+    imageBtn.disabled = true;
+    embedImageFile(file).then(function (dataUrl) {
+      const snippet =
+        ':::image\n' +
+        'src: ' + dataUrl + '\n' +
+        'alt: Describe this image for screen readers\n' +
+        'caption: \n' +
+        'width: 500\n' +
+        'align: center\n' +
+        ':::';
+      insertSnippet(snippet);
+    }).catch(function (err) {
+      alert('Could not use that file as an image: ' + err.message);
+    }).finally(function () {
+      imageBtn.textContent = '🖼️ Insert image';
+      imageBtn.disabled = false;
+    });
+  });
+
+  // Reads an image file, downscales it if it's wider than MAX_IMAGE_WIDTH,
+  // and returns a data: URL — a self-contained image with nothing to host.
+  function embedImageFile(file) {
+    return new Promise(function (resolve, reject) {
+      if (!file.type || file.type.indexOf('image/') !== 0) {
+        reject(new Error('that file does not look like an image'));
+        return;
+      }
+      const reader = new FileReader();
+      reader.onerror = function () { reject(new Error('could not read the file')); };
+      reader.onload = function () {
+        const img = new Image();
+        img.onerror = function () { reject(new Error('could not decode the image')); };
+        img.onload = function () {
+          let w = img.naturalWidth, h = img.naturalHeight;
+          if (w > MAX_IMAGE_WIDTH) {
+            h = Math.round(h * (MAX_IMAGE_WIDTH / w));
+            w = MAX_IMAGE_WIDTH;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          // keep PNG/GIF lossless (transparency), re-encode photos as JPEG (much smaller)
+          const keepPng = file.type === 'image/png' || file.type === 'image/gif';
+          resolve(keepPng ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.85));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   function insertSnippet(snippet) {
     const pos = editor.selectionStart;
     const before = editor.value.slice(0, pos);

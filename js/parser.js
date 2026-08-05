@@ -50,13 +50,26 @@
   }
 
   // A bare hex color like `background: #10182b` is invisible to YAML —
-  // "#" starts a comment there, so the value silently disappears instead
-  // of erroring. Auto-quote simple "key: #hex" lines so authors can type
-  // colors the normal way without knowing that YAML quirk.
-  function quoteHexColors(text) {
+  // "#" starts a comment there. A value starting with "*" (very common
+  // in our own syntax — "**bold**", "*italic*") is also special to YAML
+  // (it means "alias reference"). A colon anywhere inside an unquoted
+  // value ("Note: bring your laptop") ends the value early too. Rather
+  // than list every YAML trap a non-YAML-writer could hit, we just quote
+  // every plain "key: value" line ourselves before handing it to YAML —
+  // so any text is safe to type here exactly as written.
+  function quoteScalarValues(text) {
     return text.split('\n').map(function (line) {
-      const m = /^(\s*[A-Za-z_][\w-]*:\s*)(#[0-9a-fA-F]{3,8})(\s*)$/.exec(line);
-      return m ? m[1] + '"' + m[2] + '"' + m[3] : line;
+      let m = /^(\s*-\s+)([A-Za-z_][\w-]*):\s+(.*)$/.exec(line);   // "- key: value" (first field of a list item)
+      if (!m) m = /^(\s*)([A-Za-z_][\w-]*):\s+(.*)$/.exec(line);    // "key: value"
+      if (!m) return line;
+
+      const prefix = m[1], key = m[2], value = m[3];
+      if (value === '') return line;                        // "key:" with nested content below — leave alone
+      if (/^[|>][+-]?\s*$/.test(value)) return line;         // block scalar start — leave alone
+      if (/^"([^"\\]|\\.)*"$/.test(value)) return line;      // already double-quoted — leave alone
+      if (/^'([^']|'')*'$/.test(value)) return line;         // already single-quoted — leave alone
+
+      return prefix + key + ': ' + JSON.stringify(value);
     }).join('\n');
   }
 
@@ -97,7 +110,7 @@
     }
     let data;
     try {
-      data = body.trim() ? jsyaml.load(normalizeLiteralBlocks(quoteHexColors(body))) : {};
+      data = body.trim() ? jsyaml.load(quoteScalarValues(normalizeLiteralBlocks(body))) : {};
     } catch (e) {
       return {
         name: name,
