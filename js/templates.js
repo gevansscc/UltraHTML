@@ -26,15 +26,12 @@
   // show up as valid `theme:` values — no other code to touch.
   const THEMES = {
     navy:     { bg: '#1a2a4a', text: '#e8eef7', eyebrow: '#7a9fd4', meta: '#a8c4e0' },
-    dcc:      {bg: '#000000', text: '#e2b222', eyebrow: '#df005f', meta: '#df005f'},
     maroon:   { bg: '#3a1420', text: '#f7e9ec', eyebrow: '#d98ba0', meta: '#e0b3bf' },
     forest:   { bg: '#123326', text: '#e7f3ec', eyebrow: '#7fc9a3', meta: '#a9d9c1' },
     charcoal: { bg: '#242424', text: '#f2f2f2', eyebrow: '#b0b0b0', meta: '#cfcfcf' },
     slate:    { bg: '#2c3440', text: '#eef1f5', eyebrow: '#9fb3c8', meta: '#c2cedb' }
   };
   const FONT = "font-family:Arial,Helvetica,sans-serif;";
-  const CARD = "background-color:#ffffff;border:1px solid #e0e0e0;border-radius:10px;padding:24px 28px;" + FONT;
-  const LABEL = "margin:0 0 16px 0;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid #ebebeb;padding-bottom:10px;";
 
   // Small colored "tag" palette — shared by the callout block and the
   // schedule block's status pills, so both stay visually consistent and
@@ -48,6 +45,16 @@
 
   function theme(name) { return THEMES[name] || THEMES.navy; }
   function tag(kind) { return TAGS[kind] || TAGS.info; }
+
+  // Every "card family" block (section, cards, stats, list, schedule) accepts
+  // these same optional color overrides so look can be tweaked per-block
+  // without touching this file. Leave any of them out to keep the default.
+  function cardStyle(d) {
+    return 'background-color:' + (d.background || '#ffffff') + ';border:1px solid ' + (d.borderColor || '#e0e0e0') + ';border-radius:10px;padding:24px 28px;' + FONT;
+  }
+  function labelStyle(d) {
+    return 'margin:0 0 16px 0;font-size:11px;font-weight:600;color:' + (d.labelColor || '#888') + ';text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid #ebebeb;padding-bottom:10px;';
+  }
 
   // ---- template registry ------------------------------------------------
   const TEMPLATES = {
@@ -85,13 +92,16 @@ badges:
 
     section: {
       label: 'Text section (1–4 columns)',
-      hint: 'A white card with a label, an intro paragraph, and optional side-by-side columns.',
+      hint: 'A white card with a label, an intro paragraph, and optional side-by-side columns. Optional colors: background, borderColor, labelColor, textColor, boxColor, headingColor.',
       snippet:
 `:::section
 label: About this course
 body: |
   This course introduces the foundational principles and practices of
   UX and UI design as they apply to multimedia and interactive environments.
+
+  You can add a second paragraph like this one — just leave a blank line
+  between them.
 columns:
   - heading: First half of class
     text: Core technical competencies — HTML, CSS, responsive layout, and accessibility standards.
@@ -101,18 +111,21 @@ columns:
       render: function (d) {
         const cols = Array.isArray(d.columns) ? d.columns : [];
         const colCount = Math.min(Math.max(cols.length, 1), 4);
+        const boxColor = d.boxColor || '#f5f7fa';
+        const headingColor = d.headingColor || '#555';
+        const textColor = d.textColor || '#333';
         const colHtml = cols.map(function (c) {
           return (
-            '<div style="background-color:#f5f7fa;border-radius:8px;padding:14px 16px;">' +
-              (c.heading ? '<p style="margin:0 0 6px 0;font-size:12px;font-weight:600;color:#555;">' + MD.inline(c.heading) + '</p>' : '') +
-              '<p style="margin:0;font-size:13px;color:#333;line-height:1.6;">' + MD.inline(c.text || '') + '</p>' +
+            '<div style="background-color:' + boxColor + ';border-radius:8px;padding:14px 16px;">' +
+              (c.heading ? '<p style="margin:0 0 6px 0;font-size:12px;font-weight:600;color:' + headingColor + ';">' + MD.inline(c.heading) + '</p>' : '') +
+              '<p style="margin:0;font-size:13px;color:' + textColor + ';line-height:1.6;">' + MD.inline(c.text || '') + '</p>' +
             '</div>'
           );
         }).join('');
         return (
-          '<div style="' + CARD + '">' +
-            (d.label ? '<p style="' + LABEL + '">' + MD.inline(d.label) + '</p>' : '') +
-            (d.body ? MD.paragraphs(d.body, 'margin:0 0 20px 0;font-size:14px;color:#222;line-height:1.75;') : '') +
+          '<div style="' + cardStyle(d) + '">' +
+            (d.label ? '<p style="' + labelStyle(d) + '">' + MD.inline(d.label) + '</p>' : '') +
+            (d.body ? MD.paragraphs(d.body, 'margin:0 0 20px 0;font-size:14px;color:' + (d.textColor || '#222') + ';line-height:1.75;') : '') +
             (colHtml ? '<div style="display:grid;grid-template-columns:repeat(' + colCount + ',1fr);gap:12px;">' + colHtml + '</div>' : '') +
           '</div>'
         );
@@ -121,7 +134,7 @@ columns:
 
     cards: {
       label: 'Card grid',
-      hint: 'Row of small equal-width cards — good for project summaries or deliverables.',
+      hint: 'Row of small equal-width cards — good for project summaries or deliverables. Optional colors: background, borderColor, labelColor, boxColor, titleColor, textColor.',
       snippet:
 `:::cards
 label: Projects
@@ -136,17 +149,20 @@ items:
       render: function (d) {
         const items = Array.isArray(d.items) ? d.items : [];
         const n = Math.min(Math.max(items.length, 1), 4);
+        const boxColor = d.boxColor || '#f5f7fa';
+        const titleColor = d.titleColor || '#1a2a4a';
+        const textColor = d.textColor || '#333';
         const itemHtml = items.map(function (it) {
           return (
-            '<div style="background-color:#f5f7fa;border-radius:8px;padding:16px 18px;">' +
-              (it.title ? '<p style="margin:0 0 6px 0;font-size:13px;font-weight:600;color:#1a2a4a;">' + MD.inline(it.title) + '</p>' : '') +
-              '<p style="margin:0;font-size:13px;color:#333;line-height:1.6;">' + MD.inline(it.text || '') + '</p>' +
+            '<div style="background-color:' + boxColor + ';border-radius:8px;padding:16px 18px;">' +
+              (it.title ? '<p style="margin:0 0 6px 0;font-size:13px;font-weight:600;color:' + titleColor + ';">' + MD.inline(it.title) + '</p>' : '') +
+              '<p style="margin:0;font-size:13px;color:' + textColor + ';line-height:1.6;">' + MD.inline(it.text || '') + '</p>' +
             '</div>'
           );
         }).join('');
         return (
-          '<div style="' + CARD + '">' +
-            (d.label ? '<p style="' + LABEL + '">' + MD.inline(d.label) + '</p>' : '') +
+          '<div style="' + cardStyle(d) + '">' +
+            (d.label ? '<p style="' + labelStyle(d) + '">' + MD.inline(d.label) + '</p>' : '') +
             '<div style="display:grid;grid-template-columns:repeat(' + n + ',1fr);gap:12px;">' + itemHtml + '</div>' +
           '</div>'
         );
@@ -175,7 +191,7 @@ body: Double-check your file names match the naming convention on the syllabus.
 
     schedule: {
       label: 'Weekly schedule',
-      hint: 'A list of week ranges with a title each, and an optional colored tag (Quiz, Test, etc.) on the right.',
+      hint: 'A list of week ranges with a title each, and an optional colored tag (Quiz, Test, etc.) on the right. Optional colors: background, borderColor, labelColor, rowColor, titleColor, pillColor, pillTextColor.',
       snippet:
 `:::schedule
 label: Weekly Schedule
@@ -203,21 +219,25 @@ rows:
 :::`,
       render: function (d) {
         const rows = Array.isArray(d.rows) ? d.rows : [];
+        const rowColor = d.rowColor || '#f5f7fa';
+        const titleColor = d.titleColor || '#222';
+        const pillColor = d.pillColor || '#dfeaf9';
+        const pillTextColor = d.pillTextColor || '#1c5cb8';
         const rowHtml = rows.map(function (r) {
           const t = r.tag ? tag(r.tagKind) : null;
           return (
-            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;background-color:#f5f7fa;border-radius:8px;padding:12px 18px;margin-bottom:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;background-color:' + rowColor + ';border-radius:8px;padding:12px 18px;margin-bottom:8px;">' +
               '<div style="display:flex;align-items:center;gap:16px;">' +
-                (r.range ? '<span style="display:inline-block;white-space:nowrap;background-color:#dfeaf9;color:#1c5cb8;font-size:12.5px;font-weight:700;border-radius:999px;padding:5px 14px;">' + MD.inline(r.range) + '</span>' : '') +
-                '<span style="font-size:14.5px;color:#222;">' + MD.inline(r.title || '') + '</span>' +
+                (r.range ? '<span style="display:inline-block;white-space:nowrap;background-color:' + pillColor + ';color:' + pillTextColor + ';font-size:12.5px;font-weight:700;border-radius:999px;padding:5px 14px;">' + MD.inline(r.range) + '</span>' : '') +
+                '<span style="font-size:14.5px;color:' + titleColor + ';">' + MD.inline(r.title || '') + '</span>' +
               '</div>' +
               (t ? '<span style="display:inline-block;white-space:nowrap;background-color:' + t.bg + ';color:' + t.text + ';border:1px solid ' + t.border + ';font-size:11.5px;font-weight:700;border-radius:999px;padding:4px 12px;">' + MD.inline(r.tag) + '</span>' : '') +
             '</div>'
           );
         }).join('');
         return (
-          '<div style="' + CARD + '">' +
-            (d.label ? '<p style="' + LABEL + '">' + MD.inline(d.label) + '</p>' : '') +
+          '<div style="' + cardStyle(d) + '">' +
+            (d.label ? '<p style="' + labelStyle(d) + '">' + MD.inline(d.label) + '</p>' : '') +
             '<div>' + rowHtml + '</div>' +
           '</div>'
         );
@@ -226,7 +246,7 @@ rows:
 
     stats: {
       label: 'Stat grid (evaluation / breakdown)',
-      hint: 'A wrapping grid of small boxes, each with a short label and a big value — good for grading weights.',
+      hint: 'A wrapping grid of small boxes, each with a short label and a big value — good for grading weights. Optional colors: background, borderColor, labelColor, boxColor, itemLabelColor, valueColor.',
       snippet:
 `:::stats
 label: Evaluation
@@ -246,17 +266,20 @@ items:
 :::`,
       render: function (d) {
         const items = Array.isArray(d.items) ? d.items : [];
+        const boxColor = d.boxColor || '#f5f7fa';
+        const itemLabelColor = d.itemLabelColor || '#6b7688';
+        const valueColor = d.valueColor || '#1c2333';
         const itemHtml = items.map(function (it) {
           return (
-            '<div style="background-color:#f5f7fa;border-radius:8px;padding:16px 18px;">' +
-              (it.label ? '<p style="margin:0 0 6px 0;font-size:13px;color:#6b7688;">' + MD.inline(it.label) + '</p>' : '') +
-              '<p style="margin:0;font-size:24px;font-weight:700;color:#1c2333;">' + MD.inline(it.value || '') + '</p>' +
+            '<div style="background-color:' + boxColor + ';border-radius:8px;padding:16px 18px;">' +
+              (it.label ? '<p style="margin:0 0 6px 0;font-size:13px;color:' + itemLabelColor + ';">' + MD.inline(it.label) + '</p>' : '') +
+              '<p style="margin:0;font-size:24px;font-weight:700;color:' + valueColor + ';">' + MD.inline(it.value || '') + '</p>' +
             '</div>'
           );
         }).join('');
         return (
-          '<div style="' + CARD + '">' +
-            (d.label ? '<p style="' + LABEL + '">' + MD.inline(d.label) + '</p>' : '') +
+          '<div style="' + cardStyle(d) + '">' +
+            (d.label ? '<p style="' + labelStyle(d) + '">' + MD.inline(d.label) + '</p>' : '') +
             '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">' + itemHtml + '</div>' +
           '</div>'
         );
@@ -265,7 +288,7 @@ items:
 
     list: {
       label: 'List card (schedule / checklist / grading)',
-      hint: 'A white card with a heading and a bullet or numbered list.',
+      hint: 'A white card with a heading and a bullet or numbered list. Optional colors: background, borderColor, labelColor, textColor.',
       snippet:
 `:::list
 label: Grading breakdown
@@ -280,9 +303,9 @@ items:
       render: function (d) {
         const tag = d.style === 'numbered' ? 'ol' : 'ul';
         return (
-          '<div style="' + CARD + '">' +
-            (d.label ? '<p style="' + LABEL + '">' + MD.inline(d.label) + '</p>' : '') +
-            '<' + tag + ' style="margin:0;padding-left:20px;font-size:13px;color:#333;line-height:1.9;">' +
+          '<div style="' + cardStyle(d) + '">' +
+            (d.label ? '<p style="' + labelStyle(d) + '">' + MD.inline(d.label) + '</p>' : '') +
+            '<' + tag + ' style="margin:0;padding-left:20px;font-size:13px;color:' + (d.textColor || '#333') + ';line-height:1.9;">' +
               MD.listItems(d.items) +
             '</' + tag + '>' +
           '</div>'

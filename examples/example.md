@@ -17,11 +17,30 @@ body: |
   learn to design and prototype user-centered digital experiences through
   technical instruction and conceptual exploration — completing weekly
   assignments, three design projects, a quiz, and a test.
+
+  You can add a second paragraph like this one — just leave a blank line
+  between them, no special formatting needed.
 columns:
   - heading: First half of class
     text: Core technical competencies — HTML, CSS, responsive layout, and accessibility standards.
   - heading: Second half of class
     text: Creative problem solving and human-centered design — UX research, wireframing, prototyping, and visual interface design.
+:::
+
+:::section
+label: Custom colors example
+background: #10182b
+borderColor: #10182b
+labelColor: #7a9fd4
+textColor: #e8eef7
+boxColor: #1f2c4d
+headingColor: #a8c4e0
+body: |
+  Every color on this block is optional — leave any of them out and you get
+  the plain white-card look instead, like the section above.
+columns:
+  - heading: Dark variant
+    text: Handy for a section that should visually stand apart from the rest of the sheet.
 :::
 
 :::cards
