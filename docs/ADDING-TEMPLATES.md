@@ -59,6 +59,18 @@ them to YAML so authors can type colors without knowing that — if you add
 a new place colors can appear (e.g. inside a list item), keep that in
 mind.
 
+## Reusing one template's render() from another
+
+`section` calls `TEMPLATES.image.render(...)` directly wherever it needs
+to draw an image (a section-level image, or one inside a column), instead
+of duplicating the image markup. If you're building a block that should
+contain another block's content — a card with an optional image, a
+callout that can embed a mini stat, etc. — this is the pattern: call
+`TEMPLATES.<name>.render(data)` and drop the returned HTML string in
+wherever you need it. Since `TEMPLATES` is fully built before any
+`render()` function actually runs, this works regardless of which order
+the two entries appear in the file.
+
 ## Adding a new block type
 
 Open `js/templates.js` and add a new entry to the `TEMPLATES` object:

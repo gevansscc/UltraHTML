@@ -78,6 +78,19 @@ columns:
       3. Prototype
 :::
 
+:::section
+label: Body before and after columns
+body: |
+  Intro paragraph — this appears before the columns.
+columns:
+  - heading: Column A
+    text: Short column text.
+  - heading: Column B
+    text: Short column text.
+bodyAfter: |
+  Closing paragraph — this appears after the columns, in the same section.
+:::
+
 :::cards
 label: Projects
 items:

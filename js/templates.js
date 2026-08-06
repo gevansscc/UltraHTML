@@ -25,7 +25,6 @@
   // Themes used by the "hero" block. Add new ones here and they instantly
   // show up as valid `theme:` values — no other code to touch.
   const THEMES = {
-      dcc:      {bg: '#000000', text: '#e2b222', eyebrow: '#df005f', meta: '#df005f'},
     navy:     { bg: '#1a2a4a', text: '#e8eef7', eyebrow: '#7a9fd4', meta: '#a8c4e0' },
     maroon:   { bg: '#3a1420', text: '#f7e9ec', eyebrow: '#d98ba0', meta: '#e0b3bf' },
     forest:   { bg: '#123326', text: '#e7f3ec', eyebrow: '#7fc9a3', meta: '#a9d9c1' },
@@ -123,7 +122,7 @@ align: center
 
     section: {
       label: 'Text section (1–4 columns)',
-      hint: 'A white card with a label, an intro paragraph, and optional side-by-side columns. Column text supports paragraphs and lists too. Optional colors: background, borderColor, labelColor, textColor, boxColor, headingColor.',
+      hint: 'A white card: label, then any mix of body text, an image, and columns — in the order you write them. Body text can go before AND after the columns (use body + bodyAfter, or see docs for full control via content:). Columns can each have their own image too. Optional colors: background, borderColor, labelColor, textColor, boxColor, headingColor.',
       snippet:
 `:::section
 label: About this course
@@ -138,26 +137,59 @@ columns:
     text: Core technical competencies — HTML, CSS, responsive layout, and accessibility standards.
   - heading: Second half of class
     text: Creative problem solving and human-centered design — UX research, wireframing, prototyping, and visual interface design.
+bodyAfter: |
+  Any closing text goes here, after the columns.
 :::`,
       render: function (d) {
-        const cols = Array.isArray(d.columns) ? d.columns : [];
-        const colCount = Math.min(Math.max(cols.length, 1), 4);
         const boxColor = d.boxColor || '#f5f7fa';
         const headingColor = d.headingColor || '#555';
-        const textColor = d.textColor || '#333';
-        const colHtml = cols.map(function (c) {
-          return (
-            '<div style="background-color:' + boxColor + ';border-radius:8px;padding:14px 16px;">' +
-              (c.heading ? '<p style="margin:0 0 6px 0;font-size:12px;font-weight:600;color:' + headingColor + ';">' + MD.inline(c.heading) + '</p>' : '') +
-              MD.paragraphs(c.text || '', 'margin:0 0 8px 0;font-size:13px;color:' + textColor + ';line-height:1.6;') +
-            '</div>'
-          );
-        }).join('');
+        const colTextColor = d.textColor || '#333';
+        const bodyTextColor = d.textColor || '#222';
+
+        function bodyHtml(text) {
+          return text ? MD.paragraphs(text, 'margin:0 0 16px 0;font-size:14px;color:' + bodyTextColor + ';line-height:1.75;') : '';
+        }
+        function imageHtml(img) {
+          if (!img) return '';
+          return '<div style="margin:0 0 16px 0;">' + TEMPLATES.image.render(img) + '</div>';
+        }
+        function columnsHtml(cols) {
+          cols = Array.isArray(cols) ? cols : [];
+          if (!cols.length) return '';
+          const n = Math.min(Math.max(cols.length, 1), 4);
+          const items = cols.map(function (c) {
+            const colImg = c.image ? '<div style="margin:0 0 10px 0;">' + TEMPLATES.image.render(c.image) + '</div>' : '';
+            return (
+              '<div style="background-color:' + boxColor + ';border-radius:8px;padding:14px 16px;">' +
+                colImg +
+                (c.heading ? '<p style="margin:0 0 6px 0;font-size:12px;font-weight:600;color:' + headingColor + ';">' + MD.inline(c.heading) + '</p>' : '') +
+                MD.paragraphs(c.text || '', 'margin:0 0 8px 0;font-size:13px;color:' + colTextColor + ';line-height:1.6;') +
+              '</div>'
+            );
+          }).join('');
+          return '<div style="display:grid;grid-template-columns:repeat(' + n + ',1fr);gap:12px;margin:0 0 16px 0;">' + items + '</div>';
+        }
+
+        let pieces = '';
+        if (Array.isArray(d.content) && d.content.length) {
+          // full control: render body / image / columns entries in whatever order they're listed, any number of times
+          d.content.forEach(function (item) {
+            if (item.body !== undefined) pieces += bodyHtml(item.body);
+            else if (item.image !== undefined) pieces += imageHtml(item.image);
+            else if (item.columns !== undefined) pieces += columnsHtml(item.columns);
+          });
+        } else {
+          // simple case: body, then image, then columns, then bodyAfter
+          pieces += bodyHtml(d.body);
+          pieces += imageHtml(d.image);
+          pieces += columnsHtml(d.columns);
+          pieces += bodyHtml(d.bodyAfter);
+        }
+
         return (
           '<div style="' + cardStyle(d) + '">' +
             (d.label ? '<p style="' + labelStyle(d) + '">' + MD.inline(d.label) + '</p>' : '') +
-            (d.body ? MD.paragraphs(d.body, 'margin:0 0 20px 0;font-size:14px;color:' + (d.textColor || '#222') + ';line-height:1.75;') : '') +
-            (colHtml ? '<div style="display:grid;grid-template-columns:repeat(' + colCount + ',1fr);gap:12px;">' + colHtml + '</div>' : '') +
+            pieces +
           '</div>'
         );
       }

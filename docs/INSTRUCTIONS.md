@@ -180,6 +180,120 @@ columns:
       - Accessibility basics
 ```
 
+## Adding images
+
+Click **🖼️ Insert image** in the toolbar and choose a photo from your
+computer. It gets shrunk down automatically if it's very large, embedded
+directly into the block's `src:` field, and dropped into the editor as a
+ready-made `:::image` block — there's nothing to upload anywhere else,
+and nothing to link to. The image travels with the HTML you copy into
+Ultra.
+
+If you'd rather link to an image that's already hosted somewhere (on the
+web, or already in Blackboard's content collection), use **+ Insert
+block → Image** instead and paste the URL into `src:` yourself.
+
+Either way, always fill in `alt:` with a short description of the image
+— it's what screen readers announce, and it's required for accessibility.
+
+A caveat worth knowing: an embedded (uploaded) image becomes a very long
+block of text inside your markdown, since the whole image is encoded
+right there in the `src:` value. That's normal, but if a sheet has many
+photos it can make the document slow to scroll and the copied HTML very
+large. For a sheet with several images, linking to hosted URLs instead of
+uploading keeps things lighter.
+
+You can also place an image inside a Text section or inside one column
+of a section — see "Body text before and after columns, and images in a
+section" below.
+
+## Body text before and after columns, and images in a section
+
+A Text section can have body copy **before** the columns, **after** them,
+or both — and can include an image, either as its own element in the
+section or inside a specific column.
+
+For the common case (one block of text before, one after), just add
+`bodyAfter:` alongside `body:`:
+
+```
+:::section
+label: Project Overview
+body: |
+  Intro paragraph goes here.
+columns:
+  - heading: A
+    text: First half.
+  - heading: B
+    text: Second half.
+bodyAfter: |
+  Closing paragraph, after the columns.
+:::
+```
+
+Add an `image:` field the same way to drop a picture into the section —
+it renders between `body` and `columns`:
+
+```
+:::section
+label: Project Overview
+body: |
+  Intro paragraph.
+image:
+  src: https://example.com/your-image.jpg
+  alt: Describe the image
+  caption: Optional caption
+  width: 500
+columns:
+  - heading: A
+    text: First half.
+:::
+```
+
+An image works the same way **inside a column** — just add it to that
+column alongside `heading:` and `text:`:
+
+```
+columns:
+  - heading: First half of class
+    image:
+      src: https://example.com/your-image.jpg
+      alt: Describe the image
+    text: Text under the image.
+```
+
+### Full control over order (content:)
+
+If you need more than one block of text, more than one image, or an
+order other than body → image → columns → bodyAfter — for example two
+separate paragraphs with a set of columns in between them — use
+`content:` instead of separate `body`/`image`/`columns`/`bodyAfter`
+fields. List each piece in the exact order you want it to appear; repeat
+any type as many times as you like:
+
+```
+:::section
+label: Project Overview
+content:
+  - body: |
+      First paragraph.
+  - columns:
+      - heading: A
+        text: Column A text.
+      - heading: B
+        text: Column B text.
+  - image:
+      src: https://example.com/your-image.jpg
+      alt: Describe the image
+  - body: |
+      Second paragraph, after everything above it.
+:::
+```
+
+Don't mix `content:` with `body`/`image`/`columns`/`bodyAfter` in the
+same section — if `content:` is present, it's used and the separate
+fields are ignored.
+
 ## If something looks broken
 
 A pink/orange warning box will appear in the preview instead of your
